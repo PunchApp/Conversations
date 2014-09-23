@@ -64,6 +64,11 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_ui_options" >
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_subject"
+            android:summary="@string/pref_conference_name_summary"
+            android:title="@string/pref_conference_name" />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_larger_font"
             android:summary="@string/pref_use_larger_font_summary"
@@ -90,6 +95,13 @@
                     android:summary="@string/pref_dont_save_encrypted_summary"
                     android:title="@string/pref_dont_save_encrypted" />
             </PreferenceCategory>
+                <PreferenceCategory android:title="@string/pref_expert_options_other" >
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="indicate_received"
+                        android:summary="@string/pref_use_indicate_received_summary"
+                        android:title="@string/pref_use_indicate_received" />
+                </PreferenceCategory>
         </PreferenceScreen>
 
         <CheckBoxPreference

@@ -165,14 +165,15 @@ public class ConversationFragment extends Fragment {
 			if (firstVisibleItem == 0 && messagesLoaded) {
 				long timestamp = messageList.get(0).getTimeSent();
 				messagesLoaded = false;
-				List<Message> messages = activity.xmppConnectionService
-						.getMoreMessages(conversation, timestamp);
-				messageList.addAll(0, messages);
+				int size = activity.xmppConnectionService.loadMoreMessages(
+						conversation, timestamp);
+				messageList.clear();
+				messageList.addAll(conversation.getMessages());
 				messageListAdapter.notifyDataSetChanged();
-				if (messages.size() != 0) {
+				if (size != 0) {
 					messagesLoaded = true;
 				}
-				messagesView.setSelectionFromTop(messages.size() + 1, 0);
+				messagesView.setSelectionFromTop(size + 1, 0);
 			}
 		}
 	};
@@ -274,11 +275,23 @@ public class ConversationFragment extends Fragment {
 
 					@Override
 					public void onContactPictureClicked(Message message) {
-						if (message.getConversation().getMode() == Conversation.MODE_MULTI) {
-							if (message.getPresence() != null) {
-								highlightInConference(message.getPresence());
+						if (message.getStatus() <= Message.STATUS_RECEIVED) {
+							if (message.getConversation().getMode() == Conversation.MODE_MULTI) {
+								if (message.getPresence() != null) {
+									highlightInConference(message.getPresence());
+								} else {
+									highlightInConference(message
+											.getCounterpart());
+								}
 							} else {
-								highlightInConference(message.getCounterpart());
+								Contact contact = message.getConversation()
+										.getContact();
+								if (contact.showInRoster()) {
+									activity.switchToContactDetails(contact);
+								} else {
+									activity.showAddToRosterDialog(message
+											.getConversation());
+								}
 							}
 						}
 					}
@@ -288,11 +301,13 @@ public class ConversationFragment extends Fragment {
 
 					@Override
 					public void onContactPictureLongClicked(Message message) {
-						if (message.getConversation().getMode() == Conversation.MODE_MULTI) {
-							if (message.getPresence() != null) {
-								privateMessageWith(message.getPresence());
-							} else {
-								privateMessageWith(message.getCounterpart());
+						if (message.getStatus() <= Message.STATUS_RECEIVED) {
+							if (message.getConversation().getMode() == Conversation.MODE_MULTI) {
+								if (message.getPresence() != null) {
+									privateMessageWith(message.getPresence());
+								} else {
+									privateMessageWith(message.getCounterpart());
+								}
 							}
 						}
 					}
@@ -365,7 +380,11 @@ public class ConversationFragment extends Fragment {
 				activity.getSlidingPaneLayout().closePane();
 				activity.getActionBar().setDisplayHomeAsUpEnabled(true);
 				activity.getActionBar().setHomeButtonEnabled(true);
-				activity.getActionBar().setTitle(conversation.getName());
+				if (conversation.getMode() == Conversation.MODE_SINGLE || activity.useSubjectToIdentifyConference()) {
+					activity.getActionBar().setTitle(conversation.getName());
+				} else {
+					activity.getActionBar().setTitle(conversation.getContactJid().split("/")[0]);
+				}
 				activity.invalidateOptionsMenu();
 			}
 		}
@@ -492,7 +511,7 @@ public class ConversationFragment extends Fragment {
 
 	private void messageSent() {
 		int size = this.messageList.size();
-		if (size >= 1) {
+		if (size >= 1 && this.messagesView.getLastVisiblePosition() != size - 1) {
 			messagesView.setSelection(size - 1);
 		}
 		mEditMessage.setText("");

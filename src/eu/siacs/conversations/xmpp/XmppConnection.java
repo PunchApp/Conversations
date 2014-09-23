@@ -656,8 +656,8 @@ public class XmppConnection implements Runnable {
 				Element bind = packet.findChild("bind");
 				if (bind != null) {
 					Element jid = bind.findChild("jid");
-					if (jid != null) {
-						account.setResource(jid.getContent().split("/")[1]);
+					if (jid != null && jid.getContent() != null) {
+						account.setResource(jid.getContent().split("/",2)[1]);
 						if (streamFeatures.hasChild("sm", "urn:xmpp:sm:3")) {
 							smVersion = 3;
 							EnablePacket enable = new EnablePacket(smVersion);
@@ -974,11 +974,7 @@ public class XmppConnection implements Runnable {
 		}
 
 		public boolean sm() {
-			if (connection.streamFeatures == null) {
-				return false;
-			} else {
-				return connection.streamFeatures.hasChild("sm");
-			}
+			return streamId != null;
 		}
 
 		public boolean csi() {

@@ -96,8 +96,8 @@ public class XmppConnectionService extends Service {
 	private MessageParser mMessageParser = new MessageParser(this);
 	private PresenceParser mPresenceParser = new PresenceParser(this);
 	private IqParser mIqParser = new IqParser(this);
-	private MessageGenerator mMessageGenerator = new MessageGenerator();
-	private PresenceGenerator mPresenceGenerator = new PresenceGenerator();
+	private MessageGenerator mMessageGenerator = new MessageGenerator(this);
+	private PresenceGenerator mPresenceGenerator = new PresenceGenerator(this);
 
 	private List<Account> accounts;
 	private CopyOnWriteArrayList<Conversation> conversations = null;
@@ -585,18 +585,18 @@ public class XmppConnectionService extends Service {
 			}
 
 		}
+		conv.getMessages().add(message);
+		if (!account.getXmppConnection().getFeatures().sm()
+				&& conv.getMode() != Conversation.MODE_MULTI) {
+			message.setStatus(Message.STATUS_SEND);
+		}
 		if (saveInDb) {
 			if (message.getEncryption() == Message.ENCRYPTION_NONE
 					|| saveEncryptedMessages()) {
 				databaseBackend.createMessage(message);
 			}
 		}
-		conv.getMessages().add(message);
 		if ((send) && (packet != null)) {
-			if (!account.getXmppConnection().getFeatures().sm()
-					&& conv.getMode() != Conversation.MODE_MULTI) {
-				message.setStatus(Message.STATUS_SEND);
-			}
 			sendMessagePacket(account, packet);
 		}
 		updateConversationUi();
@@ -664,8 +664,13 @@ public class XmppConnectionService extends Service {
 			}
 		}
 		if (packet != null) {
+			if (!account.getXmppConnection().getFeatures().sm()
+					&& message.getConversation().getMode() != Conversation.MODE_MULTI) {
+				markMessage(message, Message.STATUS_SEND);
+			} else {
+				markMessage(message, Message.STATUS_UNSEND);
+			}
 			sendMessagePacket(account, packet);
-			markMessage(message, Message.STATUS_SEND);
 		}
 	}
 
@@ -819,15 +824,15 @@ public class XmppConnectionService extends Service {
 			}
 		});
 	}
-
-	public List<Message> getMoreMessages(Conversation conversation,
-			long timestamp) {
+	
+	public int loadMoreMessages(Conversation conversation, long timestamp) {
 		List<Message> messages = databaseBackend.getMessages(conversation, 50,
 				timestamp);
 		for (Message message : messages) {
 			message.setConversation(conversation);
 		}
-		return messages;
+		conversation.getMessages().addAll(0, messages);
+		return messages.size();
 	}
 
 	public List<Account> getAccounts() {
@@ -847,7 +852,7 @@ public class XmppConnectionService extends Service {
 			String jid) {
 		for (Conversation conversation : haystack) {
 			if ((conversation.getAccount().equals(account))
-					&& (conversation.getContactJid().split("/")[0].equals(jid))) {
+					&& (conversation.getContactJid().split("/",2)[0].equals(jid))) {
 				return conversation;
 			}
 		}
@@ -1097,7 +1102,7 @@ public class XmppConnectionService extends Service {
 	}
 
 	private OnRenameListener renameListener = null;
-	private IqGenerator mIqGenerator = new IqGenerator();
+	private IqGenerator mIqGenerator = new IqGenerator(this);
 
 	public void setOnRenameListener(OnRenameListener listener) {
 		this.renameListener = listener;
@@ -1564,6 +1569,10 @@ public class XmppConnectionService extends Service {
 
 	public boolean saveEncryptedMessages() {
 		return !getPreferences().getBoolean("dont_save_encrypted", false);
+	}
+
+	public boolean indicateReceived() {
+		return getPreferences().getBoolean("indicate_received", false);
 	}
 
 	public void notifyUi(Conversation conversation, boolean notify) {
