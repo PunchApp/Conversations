@@ -5,7 +5,7 @@
     android:versionName="0.7.1" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="15"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -21,8 +21,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/ConversationsTheme" >
+        android:label="@string/app_name" >
         <service android:name="eu.siacs.conversations.services.XmppConnectionService" />
 
         <provider
@@ -39,89 +38,15 @@
         </receiver>
 
         <activity
-            android:name="eu.siacs.conversations.ui.ConversationActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_conversations"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity
             android:name="eu.siacs.conversations.ui.TestActivity"
-            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_conversations"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden" >
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.StartConversationActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_start_conversation"
-            android:logo="@drawable/ic_activity" >
-            <intent-filter>
-                <action android:name="android.intent.action.SENDTO" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="imto" />
-                <data android:host="jabber" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.ChooseContactActivity"
-            android:label="@string/title_activity_choose_contact" >
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.ManageAccountActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_manage_accounts" >
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.EditAccountActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize" >
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.ConferenceDetailsActivity"
-            android:label="@string/title_activity_conference_details"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.ContactDetailsActivity"
-            android:label="@string/title_activity_contact_details"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.PublishProfilePictureActivity"
-            android:label="@string/mgmt_account_publish_avatar"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity
-            android:name="eu.siacs.conversations.ui.ShareWithActivity"
-            android:label="@string/title_activity_conversations" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="image/*" />
-            </intent-filter>
-        </activity>
-        <activity android:name="de.duenndns.ssl.MemorizingActivity" />
     </application>
 
 </manifest>

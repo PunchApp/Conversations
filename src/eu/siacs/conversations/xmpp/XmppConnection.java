@@ -15,16 +15,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import javax.net.ssl.X509TrustManager;
-
 import org.xmlpull.v1.XmlPullParserException;
-
-import de.duenndns.ssl.MemorizingTrustManager;
 
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -37,8 +32,8 @@ import eu.siacs.conversations.entities.Account;
 import eu.siacs.conversations.services.XmppConnectionService;
 import eu.siacs.conversations.utils.CryptoHelper;
 import eu.siacs.conversations.utils.DNSHelper;
-import eu.siacs.conversations.utils.zlib.ZLibOutputStream;
 import eu.siacs.conversations.utils.zlib.ZLibInputStream;
+import eu.siacs.conversations.utils.zlib.ZLibOutputStream;
 import eu.siacs.conversations.xml.Element;
 import eu.siacs.conversations.xml.Tag;
 import eu.siacs.conversations.xml.TagWriter;
@@ -103,11 +98,9 @@ public class XmppConnection implements Runnable {
 	private OnStatusChanged statusListener = null;
 	private OnBindListener bindListener = null;
 	private OnMessageAcknowledged acknowledgedListener = null;
-	private MemorizingTrustManager mMemorizingTrustManager;
 
 	public XmppConnection(Account account, XmppConnectionService service) {
 		this.mRandom = service.getRNG();
-		this.mMemorizingTrustManager = service.getMemorizingTrustManager();
 		this.account = account;
 		this.wakeLock = service.getPowerManager().newWakeLock(
 				PowerManager.PARTIAL_WAKE_LOCK, account.getJid());
@@ -481,25 +474,13 @@ public class XmppConnection implements Runnable {
 		tagReader.readTag();
 		try {
 			SSLContext sc = SSLContext.getInstance("TLS");
-			sc.init(null,
-					new X509TrustManager[] { this.mMemorizingTrustManager },
-					mRandom);
+			sc.init(null, null, mRandom);
 			SSLSocketFactory factory = sc.getSocketFactory();
 
-			HostnameVerifier verifier = this.mMemorizingTrustManager
-					.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier());
 			SSLSocket sslSocket = (SSLSocket) factory.createSocket(socket,
 					socket.getInetAddress().getHostAddress(), socket.getPort(),
 					true);
 
-			if (verifier != null
-					&& !verifier.verify(account.getServer(),
-							sslSocket.getSession())) {
-				Log.d(Config.LOGTAG, account.getJid()
-						+ ": host mismatch in TLS connection");
-				sslSocket.close();
-				throw new IOException();
-			}
 			tagReader.setInputStream(sslSocket.getInputStream());
 			tagWriter.setOutputStream(sslSocket.getOutputStream());
 			sendStartStream();

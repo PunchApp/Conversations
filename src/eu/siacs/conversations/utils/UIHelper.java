@@ -6,27 +6,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import eu.siacs.conversations.R;
-import eu.siacs.conversations.entities.Account;
-import eu.siacs.conversations.entities.Contact;
-import eu.siacs.conversations.entities.Conversation;
-import eu.siacs.conversations.entities.Message;
-import eu.siacs.conversations.entities.MucOptions.User;
-import eu.siacs.conversations.ui.ConversationActivity;
-import eu.siacs.conversations.ui.ManageAccountActivity;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -34,18 +18,17 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract.Contacts;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
-import android.text.Html;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.QuickContactBadge;
-import android.widget.TextView;
+import eu.siacs.conversations.R;
+import eu.siacs.conversations.entities.Account;
+import eu.siacs.conversations.entities.Contact;
+import eu.siacs.conversations.entities.Conversation;
+import eu.siacs.conversations.entities.Message;
+import eu.siacs.conversations.entities.MucOptions.User;
 
 public class UIHelper {
 	private static final int BG_COLOR = 0xFF181818;
@@ -288,47 +271,47 @@ public class UIHelper {
 				getRealPx(dpSize, context), bgColor, fgColor);
 	}
 
-	public static void showErrorNotification(Context context,
-			List<Account> accounts) {
-		NotificationManager mNotificationManager = (NotificationManager) context
-				.getSystemService(Context.NOTIFICATION_SERVICE);
-		List<Account> accountsWproblems = new ArrayList<Account>();
-		for (Account account : accounts) {
-			if (account.hasErrorStatus()) {
-				accountsWproblems.add(account);
-			}
-		}
-		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				context);
-		if (accountsWproblems.size() == 0) {
-			mNotificationManager.cancel(1111);
-			return;
-		} else if (accountsWproblems.size() == 1) {
-			mBuilder.setContentTitle(context
-					.getString(R.string.problem_connecting_to_account));
-			mBuilder.setContentText(accountsWproblems.get(0).getJid());
-		} else {
-			mBuilder.setContentTitle(context
-					.getString(R.string.problem_connecting_to_accounts));
-			mBuilder.setContentText(context.getString(R.string.touch_to_fix));
-		}
-		mBuilder.setOngoing(true);
-		mBuilder.setLights(0xffffffff, 2000, 4000);
-		mBuilder.setSmallIcon(R.drawable.ic_notification);
-		TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-		stackBuilder.addParentStack(ConversationActivity.class);
-
-		Intent manageAccountsIntent = new Intent(context,
-				ManageAccountActivity.class);
-		stackBuilder.addNextIntent(manageAccountsIntent);
-
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-
-		mBuilder.setContentIntent(resultPendingIntent);
-		Notification notification = mBuilder.build();
-		mNotificationManager.notify(1111, notification);
-	}
+//	public static void showErrorNotification(Context context,
+//			List<Account> accounts) {
+//		NotificationManager mNotificationManager = (NotificationManager) context
+//				.getSystemService(Context.NOTIFICATION_SERVICE);
+//		List<Account> accountsWproblems = new ArrayList<Account>();
+//		for (Account account : accounts) {
+//			if (account.hasErrorStatus()) {
+//				accountsWproblems.add(account);
+//			}
+//		}
+//		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+//				context);
+//		if (accountsWproblems.size() == 0) {
+//			mNotificationManager.cancel(1111);
+//			return;
+//		} else if (accountsWproblems.size() == 1) {
+//			mBuilder.setContentTitle(context
+//					.getString(R.string.problem_connecting_to_account));
+//			mBuilder.setContentText(accountsWproblems.get(0).getJid());
+//		} else {
+//			mBuilder.setContentTitle(context
+//					.getString(R.string.problem_connecting_to_accounts));
+//			mBuilder.setContentText(context.getString(R.string.touch_to_fix));
+//		}
+//		mBuilder.setOngoing(true);
+//		mBuilder.setLights(0xffffffff, 2000, 4000);
+//		mBuilder.setSmallIcon(R.drawable.ic_notification);
+//		TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+//		stackBuilder.addParentStack(ConversationActivity.class);
+//
+//		Intent manageAccountsIntent = new Intent(context,
+//				ManageAccountActivity.class);
+//		stackBuilder.addNextIntent(manageAccountsIntent);
+//
+//		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+//				PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//		mBuilder.setContentIntent(resultPendingIntent);
+//		Notification notification = mBuilder.build();
+//		mNotificationManager.notify(1111, notification);
+//	}
 
 	private static Pattern generateNickHighlightPattern(String nick) {
 		// We expect a word boundary, i.e. space or start of string, followed by
@@ -340,148 +323,148 @@ public class UIHelper {
 				Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	}
 
-	public static void updateNotification(Context context,
-			List<Conversation> conversations, Conversation currentCon,
-			boolean notify) {
-		NotificationManager mNotificationManager = (NotificationManager) context
-				.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		boolean showNofifications = preferences.getBoolean("show_notification",
-				true);
-		boolean vibrate = preferences.getBoolean("vibrate_on_notification",
-				true);
-		boolean alwaysNotify = preferences.getBoolean(
-				"notify_in_conversation_when_highlighted", false);
-
-		if (!showNofifications) {
-			mNotificationManager.cancel(2342);
-			return;
-		}
-
-		String targetUuid = "";
-
-		if ((currentCon != null)
-				&& (currentCon.getMode() == Conversation.MODE_MULTI)
-				&& (!alwaysNotify) && notify) {
-			String nick = currentCon.getMucOptions().getActualNick();
-			Pattern highlight = generateNickHighlightPattern(nick);
-			Matcher m = highlight.matcher(currentCon.getLatestMessage()
-					.getBody());
-			notify = m.find()
-					|| (currentCon.getLatestMessage().getType() == Message.TYPE_PRIVATE);
-		}
-
-		List<Conversation> unread = new ArrayList<Conversation>();
-		for (Conversation conversation : conversations) {
-			if (conversation.getMode() == Conversation.MODE_MULTI) {
-				if ((!conversation.isRead())
-						&& ((wasHighlightedOrPrivate(conversation) || (alwaysNotify)))) {
-					unread.add(conversation);
-				}
-			} else {
-				if (!conversation.isRead()) {
-					unread.add(conversation);
-				}
-			}
-		}
-		String ringtone = preferences.getString("notification_ringtone", null);
-
-		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				context);
-		if (unread.size() == 0) {
-			mNotificationManager.cancel(2342);
-			return;
-		} else if (unread.size() == 1) {
-			Conversation conversation = unread.get(0);
-			targetUuid = conversation.getUuid();
-			mBuilder.setLargeIcon(conversation.getImage(context, 64));
-			mBuilder.setContentTitle(conversation.getName());
-			if (notify) {
-				mBuilder.setTicker(conversation.getLatestMessage()
-						.getReadableBody(context));
-			}
-			StringBuilder bigText = new StringBuilder();
-			List<Message> messages = conversation.getMessages();
-			String firstLine = "";
-			for (int i = messages.size() - 1; i >= 0; --i) {
-				if (!messages.get(i).isRead()) {
-					if (i == messages.size() - 1) {
-						firstLine = messages.get(i).getReadableBody(context);
-						bigText.append(firstLine);
-					} else {
-						firstLine = messages.get(i).getReadableBody(context);
-						bigText.insert(0, firstLine + "\n");
-					}
-				} else {
-					break;
-				}
-			}
-			mBuilder.setContentText(firstLine);
-			mBuilder.setStyle(new NotificationCompat.BigTextStyle()
-					.bigText(bigText.toString()));
-		} else {
-			NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
-			style.setBigContentTitle(unread.size() + " "
-					+ context.getString(R.string.unread_conversations));
-			StringBuilder names = new StringBuilder();
-			for (int i = 0; i < unread.size(); ++i) {
-				targetUuid = unread.get(i).getUuid();
-				if (i < unread.size() - 1) {
-					names.append(unread.get(i).getName() + ", ");
-				} else {
-					names.append(unread.get(i).getName());
-				}
-				style.addLine(Html.fromHtml("<b>"
-						+ unread.get(i).getName()
-						+ "</b> "
-						+ unread.get(i).getLatestMessage()
-								.getReadableBody(context)));
-			}
-			mBuilder.setContentTitle(unread.size() + " "
-					+ context.getString(R.string.unread_conversations));
-			mBuilder.setContentText(names.toString());
-			mBuilder.setStyle(style);
-		}
-		if ((currentCon != null) && (notify)) {
-			targetUuid = currentCon.getUuid();
-		}
-		if (unread.size() != 0) {
-			mBuilder.setSmallIcon(R.drawable.ic_notification);
-			if (notify) {
-				if (vibrate) {
-					int dat = 70;
-					long[] pattern = { 0, 3 * dat, dat, dat };
-					mBuilder.setVibrate(pattern);
-				}
-				mBuilder.setLights(0xffffffff, 2000, 4000);
-				if (ringtone != null) {
-					mBuilder.setSound(Uri.parse(ringtone));
-				}
-			}
-
-			TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-			stackBuilder.addParentStack(ConversationActivity.class);
-
-			Intent viewConversationIntent = new Intent(context,
-					ConversationActivity.class);
-			viewConversationIntent.setAction(Intent.ACTION_VIEW);
-			viewConversationIntent.putExtra(ConversationActivity.CONVERSATION,
-					targetUuid);
-			viewConversationIntent
-					.setType(ConversationActivity.VIEW_CONVERSATION);
-
-			stackBuilder.addNextIntent(viewConversationIntent);
-
-			PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
-					0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-			mBuilder.setContentIntent(resultPendingIntent);
-			Notification notification = mBuilder.build();
-			mNotificationManager.notify(2342, notification);
-		}
-	}
+//	public static void updateNotification(Context context,
+//			List<Conversation> conversations, Conversation currentCon,
+//			boolean notify) {
+//		NotificationManager mNotificationManager = (NotificationManager) context
+//				.getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//		SharedPreferences preferences = PreferenceManager
+//				.getDefaultSharedPreferences(context);
+//		boolean showNofifications = preferences.getBoolean("show_notification",
+//				true);
+//		boolean vibrate = preferences.getBoolean("vibrate_on_notification",
+//				true);
+//		boolean alwaysNotify = preferences.getBoolean(
+//				"notify_in_conversation_when_highlighted", false);
+//
+//		if (!showNofifications) {
+//			mNotificationManager.cancel(2342);
+//			return;
+//		}
+//
+//		String targetUuid = "";
+//
+//		if ((currentCon != null)
+//				&& (currentCon.getMode() == Conversation.MODE_MULTI)
+//				&& (!alwaysNotify) && notify) {
+//			String nick = currentCon.getMucOptions().getActualNick();
+//			Pattern highlight = generateNickHighlightPattern(nick);
+//			Matcher m = highlight.matcher(currentCon.getLatestMessage()
+//					.getBody());
+//			notify = m.find()
+//					|| (currentCon.getLatestMessage().getType() == Message.TYPE_PRIVATE);
+//		}
+//
+//		List<Conversation> unread = new ArrayList<Conversation>();
+//		for (Conversation conversation : conversations) {
+//			if (conversation.getMode() == Conversation.MODE_MULTI) {
+//				if ((!conversation.isRead())
+//						&& ((wasHighlightedOrPrivate(conversation) || (alwaysNotify)))) {
+//					unread.add(conversation);
+//				}
+//			} else {
+//				if (!conversation.isRead()) {
+//					unread.add(conversation);
+//				}
+//			}
+//		}
+//		String ringtone = preferences.getString("notification_ringtone", null);
+//
+//		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+//				context);
+//		if (unread.size() == 0) {
+//			mNotificationManager.cancel(2342);
+//			return;
+//		} else if (unread.size() == 1) {
+//			Conversation conversation = unread.get(0);
+//			targetUuid = conversation.getUuid();
+//			mBuilder.setLargeIcon(conversation.getImage(context, 64));
+//			mBuilder.setContentTitle(conversation.getName());
+//			if (notify) {
+//				mBuilder.setTicker(conversation.getLatestMessage()
+//						.getReadableBody(context));
+//			}
+//			StringBuilder bigText = new StringBuilder();
+//			List<Message> messages = conversation.getMessages();
+//			String firstLine = "";
+//			for (int i = messages.size() - 1; i >= 0; --i) {
+//				if (!messages.get(i).isRead()) {
+//					if (i == messages.size() - 1) {
+//						firstLine = messages.get(i).getReadableBody(context);
+//						bigText.append(firstLine);
+//					} else {
+//						firstLine = messages.get(i).getReadableBody(context);
+//						bigText.insert(0, firstLine + "\n");
+//					}
+//				} else {
+//					break;
+//				}
+//			}
+//			mBuilder.setContentText(firstLine);
+//			mBuilder.setStyle(new NotificationCompat.BigTextStyle()
+//					.bigText(bigText.toString()));
+//		} else {
+//			NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
+//			style.setBigContentTitle(unread.size() + " "
+//					+ context.getString(R.string.unread_conversations));
+//			StringBuilder names = new StringBuilder();
+//			for (int i = 0; i < unread.size(); ++i) {
+//				targetUuid = unread.get(i).getUuid();
+//				if (i < unread.size() - 1) {
+//					names.append(unread.get(i).getName() + ", ");
+//				} else {
+//					names.append(unread.get(i).getName());
+//				}
+//				style.addLine(Html.fromHtml("<b>"
+//						+ unread.get(i).getName()
+//						+ "</b> "
+//						+ unread.get(i).getLatestMessage()
+//								.getReadableBody(context)));
+//			}
+//			mBuilder.setContentTitle(unread.size() + " "
+//					+ context.getString(R.string.unread_conversations));
+//			mBuilder.setContentText(names.toString());
+//			mBuilder.setStyle(style);
+//		}
+//		if ((currentCon != null) && (notify)) {
+//			targetUuid = currentCon.getUuid();
+//		}
+//		if (unread.size() != 0) {
+//			mBuilder.setSmallIcon(R.drawable.ic_notification);
+//			if (notify) {
+//				if (vibrate) {
+//					int dat = 70;
+//					long[] pattern = { 0, 3 * dat, dat, dat };
+//					mBuilder.setVibrate(pattern);
+//				}
+//				mBuilder.setLights(0xffffffff, 2000, 4000);
+//				if (ringtone != null) {
+//					mBuilder.setSound(Uri.parse(ringtone));
+//				}
+//			}
+//
+//			TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+//			stackBuilder.addParentStack(ConversationActivity.class);
+//
+//			Intent viewConversationIntent = new Intent(context,
+//					ConversationActivity.class);
+//			viewConversationIntent.setAction(Intent.ACTION_VIEW);
+//			viewConversationIntent.putExtra(ConversationActivity.CONVERSATION,
+//					targetUuid);
+//			viewConversationIntent
+//					.setType(ConversationActivity.VIEW_CONVERSATION);
+//
+//			stackBuilder.addNextIntent(viewConversationIntent);
+//
+//			PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+//					0, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//			mBuilder.setContentIntent(resultPendingIntent);
+//			Notification notification = mBuilder.build();
+//			mNotificationManager.notify(2342, notification);
+//		}
+//	}
 
 	private static boolean wasHighlightedOrPrivate(Conversation conversation) {
 		List<Message> messages = conversation.getMessages();
@@ -511,38 +494,38 @@ public class UIHelper {
 		badge.setImageBitmap(contact.getImage(72, context));
 	}
 
-	public static AlertDialog getVerifyFingerprintDialog(
-			final ConversationActivity activity,
-			final Conversation conversation, final View msg) {
-		final Contact contact = conversation.getContact();
-		final Account account = conversation.getAccount();
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-		builder.setTitle("Verify fingerprint");
-		LayoutInflater inflater = activity.getLayoutInflater();
-		View view = inflater.inflate(R.layout.dialog_verify_otr, null);
-		TextView jid = (TextView) view.findViewById(R.id.verify_otr_jid);
-		TextView fingerprint = (TextView) view
-				.findViewById(R.id.verify_otr_fingerprint);
-		TextView yourprint = (TextView) view
-				.findViewById(R.id.verify_otr_yourprint);
-
-		jid.setText(contact.getJid());
-		fingerprint.setText(conversation.getOtrFingerprint());
-		yourprint.setText(account.getOtrFingerprint());
-		builder.setNegativeButton("Cancel", null);
-		builder.setPositiveButton("Verify", new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				contact.addOtrFingerprint(conversation.getOtrFingerprint());
-				msg.setVisibility(View.GONE);
-				activity.xmppConnectionService.syncRosterToDisk(account);
-			}
-		});
-		builder.setView(view);
-		return builder.create();
-	}
+//	public static AlertDialog getVerifyFingerprintDialog(
+//			final ConversationActivity activity,
+//			final Conversation conversation, final View msg) {
+//		final Contact contact = conversation.getContact();
+//		final Account account = conversation.getAccount();
+//
+//		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+//		builder.setTitle("Verify fingerprint");
+//		LayoutInflater inflater = activity.getLayoutInflater();
+//		View view = inflater.inflate(R.layout.dialog_verify_otr, null);
+//		TextView jid = (TextView) view.findViewById(R.id.verify_otr_jid);
+//		TextView fingerprint = (TextView) view
+//				.findViewById(R.id.verify_otr_fingerprint);
+//		TextView yourprint = (TextView) view
+//				.findViewById(R.id.verify_otr_yourprint);
+//
+//		jid.setText(contact.getJid());
+//		fingerprint.setText(conversation.getOtrFingerprint());
+//		yourprint.setText(account.getOtrFingerprint());
+//		builder.setNegativeButton("Cancel", null);
+//		builder.setPositiveButton("Verify", new OnClickListener() {
+//
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				contact.addOtrFingerprint(conversation.getOtrFingerprint());
+//				msg.setVisibility(View.GONE);
+//				activity.xmppConnectionService.syncRosterToDisk(account);
+//			}
+//		});
+//		builder.setView(view);
+//		return builder.create();
+//	}
 
 	public static Bitmap getSelfContactPicture(Account account, int size,
 			boolean showPhoneSelfContactPicture, Context context) {
