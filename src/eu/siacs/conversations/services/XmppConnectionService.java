@@ -191,8 +191,8 @@ public class XmppConnectionService extends Service {
 					scheduleWakeupCall((int) (next * 1.2), false);
 				}
 			}
-//			UIHelper.showErrorNotification(getApplicationContext(),
-//					getAccounts());
+			// UIHelper.showErrorNotification(getApplicationContext(),
+			// getAccounts());
 		}
 	};
 
@@ -268,10 +268,10 @@ public class XmppConnectionService extends Service {
 			final Uri uri, final UiCallback<Message> callback) {
 		final Message message;
 		if (conversation.getNextEncryption(forceEncryption()) == Message.ENCRYPTION_PGP) {
-			message = new Message(conversation, "",
+			message = new Message(conversation, null, "",
 					Message.ENCRYPTION_DECRYPTED);
 		} else {
-			message = new Message(conversation, "",
+			message = new Message(conversation, null, "",
 					conversation.getNextEncryption(forceEncryption()));
 		}
 		message.setPresence(conversation.getNextPresence());
@@ -818,7 +818,7 @@ public class XmppConnectionService extends Service {
 			}
 		});
 	}
-	
+
 	public int loadMoreMessages(Conversation conversation, long timestamp) {
 		List<Message> messages = databaseBackend.getMessages(conversation, 50,
 				timestamp);
@@ -846,7 +846,8 @@ public class XmppConnectionService extends Service {
 			String jid) {
 		for (Conversation conversation : haystack) {
 			if ((conversation.getAccount().equals(account))
-					&& (conversation.getContactJid().split("/",2)[0].equals(jid))) {
+					&& (conversation.getContactJid().split("/", 2)[0]
+							.equals(jid))) {
 				return conversation;
 			}
 		}
@@ -932,7 +933,8 @@ public class XmppConnectionService extends Service {
 		databaseBackend.updateAccount(account);
 		reconnectAccount(account, false);
 		updateAccountUi();
-//		UIHelper.showErrorNotification(getApplicationContext(), getAccounts());
+		// UIHelper.showErrorNotification(getApplicationContext(),
+		// getAccounts());
 	}
 
 	public void deleteAccount(Account account) {
@@ -952,7 +954,8 @@ public class XmppConnectionService extends Service {
 		databaseBackend.deleteAccount(account);
 		this.accounts.remove(account);
 		updateAccountUi();
-//		UIHelper.showErrorNotification(getApplicationContext(), getAccounts());
+		// UIHelper.showErrorNotification(getApplicationContext(),
+		// getAccounts());
 	}
 
 	public void setOnConversationListChangedListener(
@@ -1573,8 +1576,8 @@ public class XmppConnectionService extends Service {
 		if (mOnConversationUpdate != null) {
 			mOnConversationUpdate.onConversationUpdate();
 		} else {
-//			UIHelper.updateNotification(getApplicationContext(),
-//					getConversations(), conversation, notify);
+			// UIHelper.updateNotification(getApplicationContext(),
+			// getConversations(), conversation, notify);
 		}
 	}
 

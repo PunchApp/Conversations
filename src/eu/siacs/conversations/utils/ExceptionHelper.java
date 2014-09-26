@@ -92,8 +92,8 @@ public class ExceptionHelper {
 							Conversation conversation = service
 									.findOrCreateConversation(finalAccount,
 											"bugs@siacs.eu", false);
-							Message message = new Message(conversation, report
-									.toString(), Message.ENCRYPTION_NONE);
+							Message message = new Message(conversation, null,
+									report.toString(), Message.ENCRYPTION_NONE);
 							service.sendMessage(message);
 						}
 					});

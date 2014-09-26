@@ -13,6 +13,15 @@ public class MessagePacket extends AbstractStanza {
 		super("message");
 	}
 
+	public static Element getMetadata(Element element) {
+		return element.findChild("metadata",
+				"http://thin.kr/xmpp/message_metadata");
+	}
+
+	public Element getMetadata() {
+		return getMetadata(this);
+	}
+
 	public String getBody() {
 		Element body = this.findChild("body");
 		if (body != null) {

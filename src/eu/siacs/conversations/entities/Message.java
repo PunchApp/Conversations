@@ -2,6 +2,7 @@ package eu.siacs.conversations.entities;
 
 import eu.siacs.conversations.Config;
 import eu.siacs.conversations.R;
+import eu.siacs.conversations.xml.Element;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -48,6 +49,7 @@ public class Message extends AbstractEntity {
 	protected String conversationUuid;
 	protected String counterpart;
 	protected String trueCounterpart;
+	protected Element metadata;
 	protected String body;
 	protected String encryptedBody;
 	protected long timeSent;
@@ -65,29 +67,32 @@ public class Message extends AbstractEntity {
 
 	}
 
-	public Message(Conversation conversation, String body, int encryption) {
+	public Message(Conversation conversation, Element metadata, String body,
+			int encryption) {
 		this(java.util.UUID.randomUUID().toString(), conversation.getUuid(),
-				conversation.getContactJid(), null, body, System
+				conversation.getContactJid(), null, metadata, body, System
 						.currentTimeMillis(), encryption,
 				Message.STATUS_UNSEND, TYPE_TEXT, null);
 		this.conversation = conversation;
 	}
 
-	public Message(Conversation conversation, String counterpart, String body,
-			int encryption, int status) {
+	public Message(Conversation conversation, String counterpart,
+			Element metadata, String body, int encryption, int status) {
 		this(java.util.UUID.randomUUID().toString(), conversation.getUuid(),
-				counterpart, null, body, System.currentTimeMillis(),
+				counterpart, null, metadata, body, System.currentTimeMillis(),
 				encryption, status, TYPE_TEXT, null);
 		this.conversation = conversation;
 	}
 
 	public Message(String uuid, String conversationUUid, String counterpart,
-			String trueCounterpart, String body, long timeSent, int encryption,
-			int status, int type, String remoteMsgId) {
+			String trueCounterpart, Element metadata, String body,
+			long timeSent, int encryption, int status, int type,
+			String remoteMsgId) {
 		this.uuid = uuid;
 		this.conversationUuid = conversationUUid;
 		this.counterpart = counterpart;
 		this.trueCounterpart = trueCounterpart;
+		this.metadata = metadata;
 		this.body = body;
 		this.timeSent = timeSent;
 		this.encryption = encryption;
@@ -143,6 +148,10 @@ public class Message extends AbstractEntity {
 		}
 	}
 
+	public Element getMetadata() {
+		return metadata;
+	}
+
 	public String getBody() {
 		return body;
 	}
@@ -184,10 +193,12 @@ public class Message extends AbstractEntity {
 	}
 
 	public static Message fromCursor(Cursor cursor) {
-		return new Message(cursor.getString(cursor.getColumnIndex(UUID)),
+		return new Message(
+				cursor.getString(cursor.getColumnIndex(UUID)),
 				cursor.getString(cursor.getColumnIndex(CONVERSATION)),
 				cursor.getString(cursor.getColumnIndex(COUNTERPART)),
 				cursor.getString(cursor.getColumnIndex(TRUE_COUNTERPART)),
+				null, // TODO
 				cursor.getString(cursor.getColumnIndex(BODY)),
 				cursor.getLong(cursor.getColumnIndex(TIME_SENT)),
 				cursor.getInt(cursor.getColumnIndex(ENCRYPTION)),
@@ -222,6 +233,10 @@ public class Message extends AbstractEntity {
 
 	public void setEncryption(int encryption) {
 		this.encryption = encryption;
+	}
+
+	public void setMetadata(Element metadata) {
+		this.metadata = metadata;
 	}
 
 	public void setBody(String body) {

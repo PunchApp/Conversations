@@ -131,7 +131,8 @@ public class Conversation extends AbstractEntity {
 
 	public Message getLatestMessage() {
 		if ((this.messages == null) || (this.messages.size() == 0)) {
-			Message message = new Message(this, "", Message.ENCRYPTION_NONE);
+			Message message = new Message(this, null, "",
+					Message.ENCRYPTION_NONE);
 			message.setTime(getCreated());
 			return message;
 		} else {
@@ -229,8 +230,8 @@ public class Conversation extends AbstractEntity {
 		if (this.otrSession != null) {
 			return this.otrSession;
 		} else {
-			SessionID sessionId = new SessionID(
-					this.getContactJid().split("/",2)[0], presence, "xmpp");
+			SessionID sessionId = new SessionID(this.getContactJid().split("/",
+					2)[0], presence, "xmpp");
 			this.otrSession = new SessionImpl(sessionId, getAccount()
 					.getOtrEngine(service));
 			try {

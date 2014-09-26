@@ -34,11 +34,12 @@ public class MessageParser extends AbstractParser implements
 		Message finishedMessage;
 		if (pgpBody != null) {
 			finishedMessage = new Message(conversation, packet.getFrom(),
-					pgpBody, Message.ENCRYPTION_PGP, Message.STATUS_RECEIVED);
+					packet.getMetadata(), pgpBody, Message.ENCRYPTION_PGP,
+					Message.STATUS_RECEIVED);
 		} else {
 			finishedMessage = new Message(conversation, packet.getFrom(),
-					packet.getBody(), Message.ENCRYPTION_NONE,
-					Message.STATUS_RECEIVED);
+					packet.getMetadata(), packet.getBody(),
+					Message.ENCRYPTION_NONE, Message.STATUS_RECEIVED);
 		}
 		finishedMessage.setRemoteMsgId(packet.getId());
 		if (conversation.getMode() == Conversation.MODE_MULTI
@@ -115,8 +116,8 @@ public class MessageParser extends AbstractParser implements
 			conversation
 					.setLatestMarkableMessageId(getMarkableMessageId(packet));
 			Message finishedMessage = new Message(conversation,
-					packet.getFrom(), body, Message.ENCRYPTION_OTR,
-					Message.STATUS_RECEIVED);
+					packet.getFrom(), packet.getMetadata(), body,
+					Message.ENCRYPTION_OTR, Message.STATUS_RECEIVED);
 			finishedMessage.setTime(getTimestamp(packet));
 			finishedMessage.setRemoteMsgId(packet.getId());
 			return finishedMessage;
@@ -164,10 +165,12 @@ public class MessageParser extends AbstractParser implements
 		Message finishedMessage;
 		if (pgpBody == null) {
 			finishedMessage = new Message(conversation, counterPart,
-					packet.getBody(), Message.ENCRYPTION_NONE, status);
+					packet.getMetadata(), packet.getBody(),
+					Message.ENCRYPTION_NONE, status);
 		} else {
-			finishedMessage = new Message(conversation, counterPart, pgpBody,
-					Message.ENCRYPTION_PGP, status);
+			finishedMessage = new Message(conversation, counterPart,
+					packet.getMetadata(), pgpBody, Message.ENCRYPTION_PGP,
+					status);
 		}
 		finishedMessage.setRemoteMsgId(packet.getId());
 		if (status == Message.STATUS_RECEIVED) {
@@ -229,11 +232,13 @@ public class MessageParser extends AbstractParser implements
 		String pgpBody = getPgpBody(message);
 		Message finishedMessage;
 		if (pgpBody != null) {
-			finishedMessage = new Message(conversation, fullJid, pgpBody,
+			finishedMessage = new Message(conversation, fullJid,
+					MessagePacket.getMetadata(message), pgpBody,
 					Message.ENCRYPTION_PGP, status);
 		} else {
 			String body = message.findChild("body").getContent();
-			finishedMessage = new Message(conversation, fullJid, body,
+			finishedMessage = new Message(conversation, fullJid,
+					MessagePacket.getMetadata(message), body,
 					Message.ENCRYPTION_NONE, status);
 		}
 		finishedMessage.setTime(getTimestamp(message));

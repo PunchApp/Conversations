@@ -256,12 +256,13 @@ public class JingleConnection implements Downloadable {
 		this.status = STATUS_INITIATED;
 		Conversation conversation = this.mXmppConnectionService
 				.findOrCreateConversation(account,
-						packet.getFrom().split("/",2)[0], false);
-		this.message = new Message(conversation, "", Message.ENCRYPTION_NONE);
+						packet.getFrom().split("/", 2)[0], false);
+		this.message = new Message(conversation, null, "",
+				Message.ENCRYPTION_NONE);
 		this.message.setType(Message.TYPE_IMAGE);
 		this.message.setStatus(Message.STATUS_RECEIVED_OFFER);
 		this.message.setDownloadable(this);
-		String[] fromParts = packet.getFrom().split("/",2);
+		String[] fromParts = packet.getFrom().split("/", 2);
 		this.message.setPresence(fromParts[1]);
 		this.account = account;
 		this.initiator = packet.getFrom();
