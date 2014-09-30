@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+        applicationId "eu.siacs.conversations"
+        minSdkVersion 15
+        targetSdkVersion 19
+        versionCode 27
+        versionName "0.7.1"
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['assets']
+            res.srcDirs = ['res']
+            aidl.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            java.srcDirs = ['src']
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+    dependencies {
+        compile project(':openpgp-api-lib')
+
+        compile ('de.measite.minidns:minidns:+')
+
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+    }
+}
