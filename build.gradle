@@ -28,6 +28,7 @@ android {
         compile project(':openpgp-api-lib')
 
         compile ('de.measite.minidns:minidns:+')
+        compile 'com.google.code.gson:gson:+'
 
         compile fileTree(dir: 'libs', include: ['*.jar'])
     }
