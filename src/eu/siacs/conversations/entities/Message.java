@@ -7,6 +7,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.google.gson.Gson;
+
 public class Message extends AbstractEntity {
 
 	public static final String TABLENAME = "messages";
@@ -39,6 +41,7 @@ public class Message extends AbstractEntity {
 	public static String CONVERSATION = "conversationUuid";
 	public static String COUNTERPART = "counterpart";
 	public static String TRUE_COUNTERPART = "trueCounterpart";
+    public static String METADATA = "metadata";
 	public static String BODY = "body";
 	public static String TIME_SENT = "timeSent";
 	public static String ENCRYPTION = "encryption";
@@ -108,6 +111,7 @@ public class Message extends AbstractEntity {
 		values.put(CONVERSATION, conversationUuid);
 		values.put(COUNTERPART, counterpart);
 		values.put(TRUE_COUNTERPART, trueCounterpart);
+        values.put(METADATA, new Gson().toJson(metadata));
 		values.put(BODY, body);
 		values.put(TIME_SENT, timeSent);
 		values.put(ENCRYPTION, encryption);
@@ -198,7 +202,7 @@ public class Message extends AbstractEntity {
 				cursor.getString(cursor.getColumnIndex(CONVERSATION)),
 				cursor.getString(cursor.getColumnIndex(COUNTERPART)),
 				cursor.getString(cursor.getColumnIndex(TRUE_COUNTERPART)),
-				null, // TODO
+                new Gson().fromJson(cursor.getString(cursor.getColumnIndex(METADATA)), Element.class),
 				cursor.getString(cursor.getColumnIndex(BODY)),
 				cursor.getLong(cursor.getColumnIndex(TIME_SENT)),
 				cursor.getInt(cursor.getColumnIndex(ENCRYPTION)),

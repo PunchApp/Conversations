@@ -1,12 +1,13 @@
 package eu.siacs.conversations.xml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import eu.siacs.conversations.utils.XmlHelper;
 
-public class Element {
+public class Element implements Serializable {
 	protected String name;
 	protected Hashtable<String, String> attributes = new Hashtable<String, String>();
 	protected String content;

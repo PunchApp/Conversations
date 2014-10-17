@@ -14,6 +14,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class DatabaseBackend extends SQLiteOpenHelper {
 
 	private static DatabaseBackend instance = null;
@@ -32,8 +35,13 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 			+ ") ON DELETE CASCADE, UNIQUE(" + Contact.ACCOUNT + ", "
 			+ Contact.JID + ") ON CONFLICT REPLACE);";
 
+    private final Gson mGson;
+
 	private DatabaseBackend(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
+        final GsonBuilder builder = new GsonBuilder();
+        mGson = builder.create();
 	}
 
 	@Override
@@ -58,6 +66,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 				+ " TEXT PRIMARY KEY, " + Message.CONVERSATION + " TEXT, "
 				+ Message.TIME_SENT + " NUMBER, " + Message.COUNTERPART
 				+ " TEXT, " + Message.TRUE_COUNTERPART + " TEXT,"
+                + Message.METADATA + " TEXT, "
 				+ Message.BODY + " TEXT, " + Message.ENCRYPTION + " NUMBER, "
 				+ Message.STATUS + " NUMBER," + Message.TYPE + " NUMBER, "
 				+ Message.REMOTE_MSG_ID + " TEXT, FOREIGN KEY("
